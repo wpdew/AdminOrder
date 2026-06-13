@@ -87,6 +87,22 @@ GITHUB_CLIENT_SECRET=
 php -S localhost:5000
 ```
 
+### 4.1 Создать новую БД (если `crm.db` отсутствует)
+
+База и таблицы создаются через bootstrap и миграции автоматически.
+
+Команда инициализации из корня репозитория:
+
+```bash
+php -r "require 'admin/app/bootstrap.php'; echo 'DB initialized'.PHP_EOL;"
+```
+
+Проверка, что таблицы создались:
+
+```bash
+sqlite3 admin/database/crm.db ".tables"
+```
+
 ### 5. Открыть админку
 
 `http://localhost:5000/admin/`
