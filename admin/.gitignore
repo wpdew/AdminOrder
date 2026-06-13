@@ -1,0 +1,22 @@
+# Composer
+/vendor/
+composer.lock
+
+# Environment
+.env
+
+# Database
+database/*.db
+database/*.db-*
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
