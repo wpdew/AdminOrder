@@ -179,4 +179,14 @@ class OrderRecord
             ':status' => (string)($data['status'] ?? 'new'),
         ]);
     }
+
+    /**
+     * Отримати кількість нових замовлень (не спам)
+     */
+    public function getNewOrdersCount(): int
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM orders WHERE status = 'new' AND is_spam = 0");
+        $stmt->execute();
+        return (int)$stmt->fetchColumn();
+    }
 }

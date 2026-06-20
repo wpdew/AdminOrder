@@ -132,6 +132,7 @@
         <div class="dashboard-grid-compact">
             <?php foreach (($systemStats ?? []) as $stat): ?>
                 <a
+                    id="stat-card-users"
                     class="stat-card dashboard-stat-compact dashboard-stat-link <?= htmlspecialchars($stat['class']) ?> glow"
                     href="<?= htmlspecialchars($stat['url'] ?? '/admin/') ?>"
                     aria-label="<?= htmlspecialchars($stat['label']) ?>"
@@ -140,9 +141,9 @@
                         <div class="stat-icon"><?= htmlspecialchars($stat['icon']) ?></div>
                         <div class="stat-label"><?= htmlspecialchars($stat['label']) ?></div>
                     </div>
-                    <div class="stat-value"><?= htmlspecialchars($stat['value']) ?></div>
+                    <div id="stat-value-users" class="stat-value"><?= htmlspecialchars($stat['value']) ?></div>
                     <div class="stat-change">
-                        <span class="stat-trend <?= htmlspecialchars($stat['trendClass']) ?>"><?= htmlspecialchars($stat['trend']) ?></span>
+                        <span id="stat-trend-users" class="stat-trend <?= htmlspecialchars($stat['trendClass']) ?>"><?= htmlspecialchars($stat['trend']) ?></span>
                         <span><?= htmlspecialchars($stat['meta']) ?></span>
                     </div>
                 </a>
@@ -158,8 +159,16 @@
         </div>
 
         <div class="dashboard-grid-orders">
-            <?php foreach (($orderSummaryStats ?? []) as $stat): ?>
+            <?php
+            $orderSummaryStatIds = [
+                'orders',
+                'revenue',
+            ];
+            foreach (($orderSummaryStats ?? []) as $index => $stat):
+                $id = $orderSummaryStatIds[$index];
+            ?>
                 <a
+                    id="stat-card-<?= $id ?>"
                     class="stat-card dashboard-stat-compact dashboard-stat-link <?= htmlspecialchars($stat['class']) ?> glow"
                     href="<?= htmlspecialchars($stat['url'] ?? '/admin/?route=table') ?>"
                     aria-label="<?= htmlspecialchars($stat['label']) ?>"
@@ -168,9 +177,9 @@
                         <div class="stat-icon"><?= htmlspecialchars($stat['icon']) ?></div>
                         <div class="stat-label"><?= htmlspecialchars($stat['label']) ?></div>
                     </div>
-                    <div class="stat-value"><?= htmlspecialchars($stat['value']) ?></div>
+                    <div id="stat-value-<?= $id ?>" class="stat-value"><?= htmlspecialchars($stat['value']) ?></div>
                     <div class="stat-change">
-                        <span class="stat-trend <?= htmlspecialchars($stat['trendClass']) ?>"><?= htmlspecialchars($stat['trend']) ?></span>
+                        <span id="stat-trend-<?= $id ?>" class="stat-trend <?= htmlspecialchars($stat['trendClass']) ?>"><?= htmlspecialchars($stat['trend']) ?></span>
                         <span><?= htmlspecialchars($stat['meta']) ?></span>
                     </div>
                 </a>
@@ -178,8 +187,19 @@
         </div>
 
         <div class="dashboard-grid-status">
-            <?php foreach (($orderStatusStats ?? []) as $stat): ?>
+            <?php
+            $orderStatusStatIds = [
+                'status-new',
+                'status-processing',
+                'status-done',
+                'status-cancelled',
+                'status-spam',
+            ];
+            foreach (($orderStatusStats ?? []) as $index => $stat):
+                $id = $orderStatusStatIds[$index];
+            ?>
                 <a
+                    id="stat-card-<?= $id ?>"
                     class="stat-card dashboard-stat-compact dashboard-stat-link <?= htmlspecialchars($stat['class']) ?> glow"
                     href="<?= htmlspecialchars($stat['url'] ?? '/admin/?route=table') ?>"
                     aria-label="<?= htmlspecialchars($stat['label']) ?>"
@@ -188,9 +208,9 @@
                         <div class="stat-icon"><?= htmlspecialchars($stat['icon']) ?></div>
                         <div class="stat-label"><?= htmlspecialchars($stat['label']) ?></div>
                     </div>
-                    <div class="stat-value"><?= htmlspecialchars($stat['value']) ?></div>
+                    <div id="stat-value-<?= $id ?>" class="stat-value"><?= htmlspecialchars($stat['value']) ?></div>
                     <div class="stat-change">
-                        <span class="stat-trend <?= htmlspecialchars($stat['trendClass']) ?>"><?= htmlspecialchars($stat['trend']) ?></span>
+                        <span id="stat-trend-<?= $id ?>" class="stat-trend <?= htmlspecialchars($stat['trendClass']) ?>"><?= htmlspecialchars($stat['trend']) ?></span>
                         <span><?= htmlspecialchars($stat['meta']) ?></span>
                     </div>
                 </a>

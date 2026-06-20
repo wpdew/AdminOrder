@@ -199,11 +199,140 @@ class DashboardController extends BaseController
         $this->render('dashboard/index', [
             'title' => __('dashboard.title'),
             'activeMenu' => 'dashboard',
+            'bodyClass' => 'dashboard-page',
+            'activeMenu' => 'dashboard',
             'totalUsers' => $totalUsers,
             'systemStats' => $systemStats,
             'showOrdersStats' => $showOrdersStats,
             'orderSummaryStats' => $orderSummaryStats,
             'orderStatusStats' => $orderStatusStats,
         ]);
+    }
+
+    /**
+     * Отримати дані для дашборду в JSON форматі
+     */
+    public function getDashboardStats(): void
+    {
+        Auth::requireAdmin();
+        header('Content-Type: application/json');
+
+        $settingsModel = new Settings();
+        $showOrdersStats = $settingsModel->isInternalOrdersDbEnabled();
+
+        $totalUsers = User::count();
+        $users = User::all();
+        $adminsCount = 0;
+        foreach ($users as $user) {
+            if (($user['role'] ?? 'user') === 'admin') {
+                $adminsCount++;
+            }
+        }
+
+        $orders = [];
+        if ($showOrdersStats) {
+            $orderModel = new OrderRecord();
+            $orders = $orderModel->getAll(5000);
+        }
+
+        $totalOrders = count($orders);
+        $newOrders = 0;
+        $processingOrders = 0;
+        $doneOrders = 0;
+        $cancelledOrders = 0;
+        $spamOrders = 0;
+        $totalRevenue = 0.0;
+
+        foreach ($orders as $order) {
+            $status = trim((string)($order['status'] ?? 'new'));
+            if ($status === 'new') {
+                $newOrders++;
+            } elseif ($status === 'processing') {
+                $processingOrders++;
+            } elseif ($status === 'done') {
+                $doneOrders++;
+            } elseif ($status === 'cancelled') {
+                $cancelledOrders++;
+            }
+
+            if ((int)($order['is_spam'] ?? 0) === 1 || $status === 'spam') {
+                $spamOrders++;
+            }
+
+            $totalRevenue += (float)($order['total_sum'] ?? 0);
+        }
+
+        $blockedIpModel = new BlockedIp();
+        $allBlockedIps = $blockedIpModel->getAll();
+        $activeBlockedIps = 0;
+        foreach ($allBlockedIps as $blockedIp) {
+            if ((int)($blockedIp['is_active'] ?? 0) === 1) {
+                $activeBlockedIps++;
+            }
+        }
+
+        $settingsRows = $settingsModel->getOrderSettings();
+        $configuredGroups = [];
+        foreach ($settingsRows as $setting) {
+            $value = trim((string)($setting['setting_value'] ?? ''));
+            $isActive = (int)($setting['is_active'] ?? 0) === 1;
+            $group = (string)($setting['setting_group'] ?? 'general');
+
+            if ($isActive && $value !== '') {
+                $configuredGroups[$group] = true;
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'showOrdersStats' => $showOrdersStats,
+            'systemStats' => [
+                'users_label' => __('dashboard_overview.users_label'),
+                'users_value' => (string)$totalUsers,
+                'users_trend' => __('dashboard_overview.users_trend', ['count' => (string)$adminsCount]),
+                'users_meta' => __('dashboard_overview.users_meta'),
+                'blocked_label' => __('dashboard_overview.blocked_label'),
+                'blocked_value' => (string)count($allBlockedIps),
+                'blocked_trend' => __('dashboard_overview.blocked_trend', ['count' => (string)$activeBlockedIps]),
+                'blocked_meta' => __('dashboard_overview.blocked_meta'),
+                'integrations_label' => __('dashboard_overview.integrations_label'),
+                'integrations_value' => (string)count($configuredGroups),
+                'integrations_trend' => __('dashboard_overview.integrations_trend', ['count' => (string)count($configuredGroups)]),
+                'integrations_meta' => __('dashboard_overview.integrations_meta'),
+            ],
+            'orderSummaryStats' => [
+                'orders_label' => __('dashboard_overview.orders_label'),
+                'orders_value' => (string)$totalOrders,
+                'orders_trend' => __('dashboard_overview.orders_trend', ['count' => (string)$newOrders]),
+                'orders_meta' => __('dashboard_overview.orders_meta'),
+                'revenue_label' => __('dashboard_overview.revenue_label'),
+                'revenue_value' => number_format($totalRevenue, 0, '.', ' ') . ' ₴',
+                'revenue_trend' => __('dashboard_overview.revenue_trend', ['count' => (string)$spamOrders]),
+                'revenue_meta' => __('dashboard_overview.revenue_meta'),
+            ],
+            'orderStatusStats' => [
+                'status_new_label' => __('dashboard_overview.status_new_label'),
+                'status_new_value' => (string)$newOrders,
+                'status_new_trend' => __('dashboard_overview.status_new_trend'),
+                'status_new_meta' => __('dashboard_overview.status_new_meta'),
+                'status_processing_label' => __('dashboard_overview.status_processing_label'),
+                'status_processing_value' => (string)$processingOrders,
+                'status_processing_trend' => __('dashboard_overview.status_processing_trend'),
+                'status_processing_meta' => __('dashboard_overview.status_processing_meta'),
+                'status_done_label' => __('dashboard_overview.status_done_label'),
+                'status_done_value' => (string)$doneOrders,
+                'status_done_trend' => __('dashboard_overview.status_done_trend'),
+                'status_done_meta' => __('dashboard_overview.status_done_meta'),
+                'status_cancelled_label' => __('dashboard_overview.status_cancelled_label'),
+                'status_cancelled_value' => (string)$cancelledOrders,
+                'status_cancelled_trend' => __('dashboard_overview.status_cancelled_trend'),
+                'status_cancelled_meta' => __('dashboard_overview.status_cancelled_meta'),
+                'status_spam_label' => __('dashboard_overview.status_spam_label'),
+                'status_spam_value' => (string)$spamOrders,
+                'status_spam_trend' => __('dashboard_overview.status_spam_trend'),
+                'status_spam_meta' => __('dashboard_overview.status_spam_meta'),
+            ],
+        ]);
+        exit();
     }
 }

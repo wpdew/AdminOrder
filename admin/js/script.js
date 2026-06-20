@@ -861,3 +861,97 @@ if (document.getElementById('registerForm')) {
     });
 }
 
+// Оновлення лічильника нових замовлень
+const updateNewOrdersCount = async () => {
+    const newOrdersBadge = document.getElementById('newOrders');
+    if (newOrdersBadge) {
+        try {
+            const response = await fetch('/admin/api/orders/count-new.php');
+            const data = await response.json();
+
+            if (data.success) {
+                if (data.count > 0) {
+                    newOrdersBadge.textContent = data.count;
+                    newOrdersBadge.classList.add('show');
+                } else {
+                    newOrdersBadge.textContent = '';
+                    newOrdersBadge.classList.remove('show');
+                }
+            } else {
+                console.error('Failed to fetch new orders count:', data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching new orders count:', error);
+        }
+    }
+};
+
+// Оновлення статистики дашборду
+const updateDashboardStats = async () => {
+    try {
+        const response = await fetch('/admin/api/dashboard-stats');
+        const data = await response.json();
+
+        if (data.success) {
+            // Оновлення System Stats
+            if (document.getElementById('stat-value-users')) {
+                document.getElementById('stat-value-users').textContent = data.systemStats.users_value;
+                document.getElementById('stat-trend-users').textContent = data.systemStats.users_trend;
+            }
+            if (document.getElementById('stat-value-blocked')) {
+                document.getElementById('stat-value-blocked').textContent = data.systemStats.blocked_value;
+                document.getElementById('stat-trend-blocked').textContent = data.systemStats.blocked_trend;
+            }
+            if (document.getElementById('stat-value-integrations')) {
+                document.getElementById('stat-value-integrations').textContent = data.systemStats.integrations_value;
+                document.getElementById('stat-trend-integrations').textContent = data.systemStats.integrations_trend;
+            }
+
+            // Оновлення Order Summary Stats
+            if (document.getElementById('stat-value-orders')) {
+                document.getElementById('stat-value-orders').textContent = data.orderSummaryStats.orders_value;
+                document.getElementById('stat-trend-orders').textContent = data.orderSummaryStats.orders_trend;
+            }
+            if (document.getElementById('stat-value-revenue')) {
+                document.getElementById('stat-value-revenue').textContent = data.orderSummaryStats.revenue_value;
+                document.getElementById('stat-trend-revenue').textContent = data.orderSummaryStats.revenue_trend;
+            }
+
+            // Оновлення Order Status Stats
+            if (document.getElementById('stat-value-status-new')) {
+                document.getElementById('stat-value-status-new').textContent = data.orderStatusStats.status_new_value;
+                document.getElementById('stat-trend-status-new').textContent = data.orderStatusStats.status_new_trend;
+            }
+            if (document.getElementById('stat-value-status-processing')) {
+                document.getElementById('stat-value-status-processing').textContent = data.orderStatusStats.status_processing_value;
+                document.getElementById('stat-trend-status-processing').textContent = data.orderStatusStats.status_processing_trend;
+            }
+            if (document.getElementById('stat-value-status-done')) {
+                document.getElementById('stat-value-status-done').textContent = data.orderStatusStats.status_done_value;
+                document.getElementById('stat-trend-status-done').textContent = data.orderStatusStats.status_done_trend;
+            }
+            if (document.getElementById('stat-value-status-cancelled')) {
+                document.getElementById('stat-value-status-cancelled').textContent = data.orderStatusStats.status_cancelled_value;
+                document.getElementById('stat-trend-status-cancelled').textContent = data.orderStatusStats.status_cancelled_trend;
+            }
+            if (document.getElementById('stat-value-status-spam')) {
+                document.getElementById('stat-value-status-spam').textContent = data.orderStatusStats.status_spam_value;
+                document.getElementById('stat-trend-status-spam').textContent = data.orderStatusStats.status_spam_trend;
+            }
+
+        } else {
+            console.error('Failed to fetch dashboard stats:', data.message);
+        }
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+    }
+};
+
+// Оновлювати кожні 30 секунд
+setInterval(updateNewOrdersCount, 30000);
+setInterval(updateDashboardStats, 30000);
+
+// Викликати одразу після завантаження сторінки
+document.addEventListener('DOMContentLoaded', updateNewOrdersCount);
+document.addEventListener('DOMContentLoaded', updateDashboardStats);
+

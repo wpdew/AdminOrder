@@ -109,7 +109,7 @@ if (Auth::isAdmin()) {
         }
     </style>
 </head>
-<body>
+<body class="<?= $bodyClass ?? '' ?>">
     <!-- Mobile Menu Button -->
     <button class="mobile-menu-btn" id="mobileMenuBtn" title="Toggle Menu">
         ☰
@@ -140,7 +140,7 @@ if (Auth::isAdmin()) {
                 <?php if ($showOrdersMenu): ?>
                 <a href="/admin/?route=table" class="nav-item <?= ($activeMenu ?? '') === 'table' ? 'active' : '' ?>">
                     <span class="icon">📋</span>
-                    <span><?= __('nav.orders') ?></span>
+                    <span><?= __('nav.orders') ?> </span> <span id="newOrders" class="badge position-absolute top-0 start-100 translate-middle"></span>
                 </a>
                 <?php endif; ?>
                 <a href="/admin/?route=blocked-ips" class="nav-item <?= ($activeMenu ?? '') === 'blocked-ips' ? 'active' : '' ?>">
