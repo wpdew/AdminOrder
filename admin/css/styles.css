@@ -23,6 +23,7 @@
     --card-bg: #1a1a1a;
     --primary-color: #6366f1;
     --input-bg: #0f0f0f;
+	--accent-red: #dc2626;
 }
 
 :root[data-theme="light"] {
@@ -44,6 +45,7 @@
     --card-bg: #ffffff;
     --primary-color: #6366f1;
     --input-bg: #f9fafb;
+	--accent-red: #dc2626;
 }
 
 /* Light theme specific overrides */
@@ -2639,79 +2641,18 @@ input:checked + .slider:before {
 
 /* Badges */
 .badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.badge-critical {
-    background: rgba(220, 38, 38, 0.15);
-    color: var(--critical);
-    border: 1px solid var(--critical);
-}
-
-.badge-high {
-    background: rgba(251, 146, 60, 0.15);
-    color: var(--high);
-    border: 1px solid var(--high);
-}
-
-.badge-medium {
-    background: rgba(250, 204, 21, 0.15);
-    color: var(--medium);
-    border: 1px solid var(--medium);
-}
-
-.badge-low {
-    background: rgba(96, 165, 250, 0.15);
-    color: var(--low);
-    border: 1px solid var(--low);
-}
-
-.badge-open {
-    background: rgba(220, 38, 38, 0.15);
-    color: var(--critical);
-    border: 1px solid var(--critical);
-}
-
-.badge-in-progress {
-    background: rgba(251, 146, 60, 0.15);
-    color: var(--high);
-    border: 1px solid var(--high);
-}
-
-.badge-resolved {
-    background: rgba(34, 197, 94, 0.15);
-    color: var(--success);
-    border: 1px solid var(--success);
-}
-
-/* Action button */
-.btn-action {
-    padding: 6px 16px;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border: none;
-    border-radius: 6px;
+    display: none;
+    background-color: var(--accent-red);
     color: white;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    border-radius: 12px;
+    padding: 2px 7px;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 22px;
+    text-align: center;
+    line-height: 1;
 }
 
-.btn-action:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
-
-.btn-action:active {
-    transform: translateY(0);
-}
-
-.dataTables_filter{
-	margin-bottom: 10px;
+.badge.show {
+    display: inline-block;
 }

@@ -300,6 +300,22 @@ $statusLabels = [
 
     .order-spam-yes { background: rgba(239,68,68,0.16); color: #ef4444; border: 1px solid #ef4444; }
     .order-spam-no { background: rgba(34,197,94,0.16); color: #22c55e; border: 1px solid #22c55e; }
+	.edit-order-btn { 
+		background: rgba(59,130,246,0.16); 
+		color: #ff1010; 
+		border: 1px solid #ff1010; 
+		display: inline-block;
+		padding: 6px 10px;
+		border-radius: 999px;
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+	.dataTables_length, .dataTables_filter {
+		padding: 5px;
+		margin: 3px;
+		display: block;
+	}
 
     .order-form-grid {
         display: grid;
