@@ -195,7 +195,7 @@ class DashboardController extends BaseController
             ],
         ];
         
-        // Рендерим view
+        // Рендерим view 
         $this->render('dashboard/index', [
             'title' => __('dashboard.title'),
             'activeMenu' => 'dashboard',

@@ -296,7 +296,7 @@ $statusLabels = [
     .order-status-processing { background: rgba(251,146,60,0.16); color: #fb923c; border: 1px solid #fb923c; }
     .order-status-done { background: rgba(34,197,94,0.16); color: #22c55e; border: 1px solid #22c55e; }
     .order-status-cancelled { background: rgba(239,68,68,0.16); color: #ef4444; border: 1px solid #ef4444; }
-    .order-status-spam { background: rgba(168,85,247,0.16); color: #a855f7; border: 1px solid #a855f7; }
+    .order-status-spam { background: rgba(168,85,247,0.16); color: #a855f7; border: 1px solid #a855f7; } 
 
     .order-spam-yes { background: rgba(239,68,68,0.16); color: #ef4444; border: 1px solid #ef4444; }
     .order-spam-no { background: rgba(34,197,94,0.16); color: #22c55e; border: 1px solid #22c55e; }

@@ -7,7 +7,7 @@ use App\Config\DebugPDO;
 use PDO;
 
 /**
- * Модель замовлень з order.php
+ * Модель замовлень з order.php 
  */
 class OrderRecord
 {
