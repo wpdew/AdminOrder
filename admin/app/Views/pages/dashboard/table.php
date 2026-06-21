@@ -168,7 +168,7 @@ $statusLabels = [
                             formmethod="POST"
                             formnovalidate
                             data-reason-template="<?= htmlspecialchars(__('orders.block_ip_reason'), ENT_QUOTES) ?>"
-                            style="background: rgba(239,68,68,0.16); color: #ef4444; border: 1px solid #ef4444; padding: 10px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;"
+                            style="background: rgba(239,68,68,0.16); color: #ef4444; border: 1px solid #ef4444; padding: 10px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;min-width: 100px;"
                         >
                             <?= __('orders.block_ip') ?>
                         </button>
