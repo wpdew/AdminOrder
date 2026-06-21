@@ -33,9 +33,10 @@ class BlockedIpController extends BaseController
     public function handlePost(): void
     {
         Auth::requireAdmin();
+        $redirectUrl = $this->getSafeRedirectUrl();
 
         if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('/admin/?route=blocked-ips');
+            $this->redirect($redirectUrl);
             return;
         }
 
@@ -105,6 +106,17 @@ class BlockedIpController extends BaseController
                 break;
         }
 
-        $this->redirect('/admin/?route=blocked-ips');
+        $this->redirect($redirectUrl);
+    }
+
+    private function getSafeRedirectUrl(): string
+    {
+        $redirectUrl = trim((string)($_POST['redirect_to'] ?? ''));
+
+        if ($redirectUrl !== '' && str_starts_with($redirectUrl, '/admin/')) {
+            return $redirectUrl;
+        }
+
+        return '/admin/?route=blocked-ips';
     }
 }

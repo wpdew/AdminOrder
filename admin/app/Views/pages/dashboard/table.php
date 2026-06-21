@@ -103,6 +103,7 @@ $statusLabels = [
                                 data-delivery="<?= htmlspecialchars((string)($order['delivery'] ?? ''), ENT_QUOTES) ?>"
                                 data-delivery-address="<?= htmlspecialchars((string)($order['delivery_address'] ?? ''), ENT_QUOTES) ?>"
                                 data-status="<?= htmlspecialchars((string)($order['status'] ?? 'new'), ENT_QUOTES) ?>"
+                                data-client-ip="<?= htmlspecialchars((string)($order['client_ip'] ?? ''), ENT_QUOTES) ?>"
                             >
                                 <?= __('form.edit') ?>
                             </button>
@@ -124,6 +125,9 @@ $statusLabels = [
         <form method="POST" action="/admin/?route=table" id="editOrderForm">
             <input type="hidden" name="id" id="orderId">
             <input type="hidden" name="status_filter" value="<?= htmlspecialchars((string)($statusFilter ?? '')) ?>">
+            <input type="hidden" name="ip_address" id="blockIpAddress">
+            <input type="hidden" name="reason" id="blockIpReason">
+            <input type="hidden" name="redirect_to" value="<?= htmlspecialchars((string)($_SERVER['REQUEST_URI'] ?? '/admin/?route=table'), ENT_QUOTES) ?>">
 
             <div class="order-form-grid">
                 <div class="order-form-field">
@@ -151,14 +155,39 @@ $statusLabels = [
                     <input type="number" step="0.01" min="0" name="total_sum" id="orderTotalSum">
                 </div>
                 <div class="order-form-field">
+                    <label><?= __('orders.field_client_ip') ?></label>
+                    <div style="display:flex; gap: 8px;">
+                        <input type="text" name="client_ip" id="orderClientIp" readonly style="flex-grow: 1;">
+                        <button
+                            type="submit"
+                            id="blockIpButton"
+                            class="btn-action"
+                            name="action"
+                            value="create"
+                            formaction="/admin/?route=blocked-ips"
+                            formmethod="POST"
+                            formnovalidate
+                            data-reason-template="<?= htmlspecialchars(__('orders.block_ip_reason'), ENT_QUOTES) ?>"
+                            style="background: rgba(239,68,68,0.16); color: #ef4444; border: 1px solid #ef4444; padding: 10px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;"
+                        >
+                            <?= __('orders.block_ip') ?>
+                        </button>
+                    </div>
+                </div>
+                <div class="order-form-field">
                     <label><?= __('orders.field_payment') ?></label>
                     <input type="text" name="payment" id="orderPayment">
                 </div>
                 <div class="order-form-field">
                     <label><?= __('orders.field_delivery') ?></label>
-                    <input type="text" name="delivery" id="orderDelivery">
+					<select name="delivery" id="orderDelivery">
+						<option value=""><?= __('orders.delivery_none') ?></option>
+						<option value="novapost"><?= __('orders.delivery_novapost') ?></option>
+						<option value="ukrpost"><?= __('orders.delivery_ukrpost') ?></option>
+						<option value="courier"><?= __('orders.delivery_courier') ?></option>
+					</select>
                 </div>
-                <div class="order-form-field order-form-field-full">
+                <div class="order-form-field">
                     <label><?= __('orders.field_delivery_address') ?></label>
                     <input type="text" name="delivery_address" id="orderDeliveryAddress">
                 </div>
@@ -368,12 +397,8 @@ $statusLabels = [
 
 <script>
     (function () {
-        if (typeof window.jQuery === 'undefined' || typeof jQuery.fn.DataTable === 'undefined') {
-            console.error('DataTables dependencies are not loaded.');
-            return;
-        }
-
         const modal = document.getElementById('editOrderModal');
+        const blockIpButton = document.getElementById('blockIpButton');
 
         document.querySelectorAll('.edit-order-btn').forEach((btn) => {
             btn.addEventListener('click', () => {
@@ -389,22 +414,35 @@ $statusLabels = [
                 document.getElementById('orderDelivery').value = btn.dataset.delivery || '';
                 document.getElementById('orderDeliveryAddress').value = btn.dataset.deliveryAddress || '';
                 document.getElementById('orderStatus').value = btn.dataset.status || 'new';
+                document.getElementById('orderClientIp').value = btn.dataset.clientIp || '';
+                if (blockIpButton) {
+                    blockIpButton.disabled = !btn.dataset.clientIp;
+                }
+                document.getElementById('blockIpAddress').value = btn.dataset.clientIp || '';
+                document.getElementById('blockIpReason').value = (blockIpButton ? blockIpButton.dataset.reasonTemplate : '').replace('{id}', btn.dataset.id || '');
 
                 modal.style.display = 'flex';
             });
         });
 
-        modal?.querySelectorAll('.modal-close').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                modal.style.display = 'none';
+        if (modal) {
+            modal.querySelectorAll('.modal-close').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
             });
-        });
 
-        modal?.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        if (typeof window.jQuery === 'undefined' || typeof jQuery.fn.DataTable === 'undefined') {
+            console.error('DataTables dependencies are not loaded.');
+            return;
+        }
 
         jQuery(function ($) {
             $('#ordersTable').DataTable({

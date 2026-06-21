@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Auth;
+use App\Models\BlockedIp;
 use App\Models\OrderRecord;
 use App\Models\Settings;
 
@@ -111,6 +112,11 @@ class TableController extends BaseController
             return;
         }
 
+        if (($_POST['action'] ?? '') === 'create' && isset($_POST['ip_address'])) {
+            $this->blockIpFromOrder();
+            return;
+        }
+
         $orderId = (int)($_POST['id'] ?? 0);
         if ($orderId <= 0) {
             $_SESSION['flash_error'] = __('orders.invalid_id');
@@ -139,6 +145,41 @@ class TableController extends BaseController
             $_SESSION['flash_error'] = __('orders.update_error');
         }
 
+        $redirectUrl = '/admin/?route=table';
+        if (!empty($_POST['status_filter'])) {
+            $redirectUrl .= '&status=' . urlencode((string)$_POST['status_filter']);
+        }
+
+        $this->redirect($redirectUrl);
+    }
+
+    private function blockIpFromOrder(): void
+    {
+        $ip = trim((string)($_POST['ip_address'] ?? ''));
+        $reason = trim((string)($_POST['reason'] ?? ''));
+
+        if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+            $_SESSION['flash_error'] = __('blocked_ips.invalid_ip_format');
+            $this->redirectToTable();
+            return;
+        }
+
+        $model = new BlockedIp();
+        if ($model->create([
+            'ip_address' => $ip,
+            'reason' => $reason,
+            'is_active' => 1,
+        ])) {
+            $_SESSION['flash_success'] = __('blocked_ips.ip_blocked');
+        } else {
+            $_SESSION['flash_error'] = __('blocked_ips.create_error');
+        }
+
+        $this->redirectToTable();
+    }
+
+    private function redirectToTable(): void
+    {
         $redirectUrl = '/admin/?route=table';
         if (!empty($_POST['status_filter'])) {
             $redirectUrl .= '&status=' . urlencode((string)$_POST['status_filter']);
