@@ -122,8 +122,11 @@ if (Auth::isAdmin()) {
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
+				
                 <div class="logo-icon">📊</div>
+				<a href="/admin/" style="text-decoration: none;color: var(--text-primary);">
                 <span>AdminOrder</span>
+				</a>
             </div>
             <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
                 ◀
